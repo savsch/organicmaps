@@ -31,7 +31,11 @@ char const * const g_patterns[] = {
     "ananan",    "ann aann",   "ann naa",     "annnnaaa", "nn nnn",   "nnn",      "nnn nn",
     "nnn nnn",   "nnn nnnn",   "nnnn",        "nnnn aa",  "nnnn nnn", "nnnnaa",   "nnnnn",
     "nnnnn nnn", "nnnnn nnnn", "nnnnn nnnnn", "nnnnnn",   "nnnnnnn",  "nnnnnnnn", "〒nnn nnnn",
-    "annnn"};
+    "annnn", "ana aaaa", "ana aaan", "ana aana", "ana aann", "ana anaa", "ana anan",
+    "ana anna", "ana annn", "ana naaa", "ana naan", "ana nana", "ana nann", "ana nnaa",
+    "ana nnan", "ana nnna", "ana nnnn", "ann aaaa", "ann aaan", "ann aana", "ann anaa",
+    "ann anan", "ann anna", "ann annn", "ann naaa", "ann naan", "ann nana", "ann nann",
+    "ann nnaa", "ann nnan", "ann nnna", "ann nnnn"};
 
 UniChar SimplifyChar(UniChar const & c)
 {

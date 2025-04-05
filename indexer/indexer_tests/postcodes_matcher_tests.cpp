@@ -32,6 +32,8 @@ UNIT_TEST(PostcodesMatcher_Smoke)
   TEST(LooksLikePostcode("803 0271", true /* handleAsPrefix */), ());
   TEST(LooksLikePostcode("803-0271", true /* handleAsPrefix */), ());
   TEST(LooksLikePostcode("〒803-0271", true /* handleAsPrefix */), ());
+  TEST(LooksLikePostcode("V92 CFR6", false /* handleAsPrefix */), ());
+  TEST(LooksLikePostcode("D6W TF2", true /* handleAsPrefix */), ());
 
   TEST(!LooksLikePostcode("1 мая", true /* handleAsPrefix */), ());
   TEST(!LooksLikePostcode("1 мая улица", true /* handleAsPrefix */), ());
