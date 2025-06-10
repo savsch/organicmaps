@@ -30,12 +30,20 @@ public class SyncSettingsFragment extends BaseSettingsFragment implements SyncAc
 {
   private SyncAccountAdapter mAdapter;
   private View mAddAccountHint;
-
-  private final SyncPrefs.LastSyncCallback mLastSyncCallback = new SyncPrefs.LastSyncCallback() {
+  private final SyncPrefs.LastSyncCallback mLastSyncCallback = new SyncPrefs.LastSyncCallback()
+  {
     @Override
     public void onLastSyncChanged(long accountId, long timestamp)
     {
-      mAdapter.updateSyncStatusText(accountId, true, timestamp);
+      new Handler(Looper.getMainLooper()).post(() -> mAdapter.updateSyncStatusText(accountId, true, timestamp));
+    }
+  };
+  private final SyncPrefs.AccountsChangedCallback mAccountsChangedCallback = new SyncPrefs.AccountsChangedCallback()
+  {
+    @Override
+    public void onAccountsChanged(List<SyncAccount> newAccounts)
+    {
+      new Handler(Looper.getMainLooper()).post(() -> refreshState(newAccounts));
     }
   };
 
@@ -56,20 +64,23 @@ public class SyncSettingsFragment extends BaseSettingsFragment implements SyncAc
   public void onStart()
   {
     super.onStart();
-    refreshState();
-    SyncPrefs.getInstance(getContext()).registerLastSyncedCallback(mLastSyncCallback);
+    SyncPrefs prefs = SyncPrefs.getInstance(getContext());
+    refreshState(prefs.getAccounts());
+    prefs.registerAccountsChangedCallback(mAccountsChangedCallback);
+    prefs.registerLastSyncedCallback(mLastSyncCallback);
   }
 
   @Override
   public void onStop()
   {
     super.onStop();
-    SyncPrefs.getInstance(getContext()).unregisterLastSyncedCallback(mLastSyncCallback);
+    SyncPrefs prefs = SyncPrefs.getInstance(getContext());
+    prefs.unregisterAccountsChangedCallback(mAccountsChangedCallback);
+    prefs.unregisterLastSyncedCallback(mLastSyncCallback);
   }
 
-  private void refreshState()
+  private void refreshState(List<SyncAccount> accounts)
   {
-    List<SyncAccount> accounts = SyncPrefs.getInstance(getContext()).getAccounts();
     mAdapter.updateAccounts(accounts);
     mAddAccountHint.setVisibility(accounts.isEmpty() ? View.VISIBLE : View.GONE);
   }
@@ -81,7 +92,8 @@ public class SyncSettingsFragment extends BaseSettingsFragment implements SyncAc
     MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context, R.style.MwmTheme_AlertDialog);
     ListView listView = new ListView(context);
     BackendType[] backendTypes = BackendType.values();
-    listView.setAdapter(new BaseAdapter() {
+    listView.setAdapter(new BaseAdapter()
+    {
       private final LayoutInflater inflater = LayoutInflater.from(context);
 
       @Override
@@ -107,13 +119,16 @@ public class SyncSettingsFragment extends BaseSettingsFragment implements SyncAc
       {
         View view;
         ViewHolder holder;
-        if (convertView == null) {
+        if (convertView == null)
+        {
           view = inflater.inflate(R.layout.item_labelled_icon, parent, false);
           holder = new ViewHolder();
           holder.icon = view.findViewById(R.id.iv_icon);
           holder.label = view.findViewById(R.id.tv_label);
           view.setTag(holder);
-        } else {
+        }
+        else
+        {
           view = convertView;
           holder = (ViewHolder) view.getTag();
         }
@@ -122,7 +137,8 @@ public class SyncSettingsFragment extends BaseSettingsFragment implements SyncAc
         return view;
       }
 
-      private static class ViewHolder {
+      private static class ViewHolder
+      {
         ImageView icon;
         TextView label;
       }
@@ -130,7 +146,7 @@ public class SyncSettingsFragment extends BaseSettingsFragment implements SyncAc
     AlertDialog dialog = builder.setView(listView).create();
     listView.setOnItemClickListener((parent, clickedView, position, id) -> {
       dialog.dismiss();
-      backendTypes[position].login(context, () -> new Handler(Looper.getMainLooper()).post(this::refreshState));
+      backendTypes[position].login(context);
     });
     dialog.show();
   }

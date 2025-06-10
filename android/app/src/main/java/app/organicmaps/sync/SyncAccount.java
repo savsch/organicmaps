@@ -51,8 +51,8 @@ public class SyncAccount
     try
     {
       authState = Objects.requireNonNull(BackendType.idToBackendType.get(backendType))
-                            .getAuthStateClass().getConstructor(JSONObject.class)
-                            .newInstance(json.getJSONObject(KEY_AUTH_STATE));
+                         .getAuthStateClass().getConstructor(JSONObject.class)
+                         .newInstance(json.getJSONObject(KEY_AUTH_STATE));
     }
     catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException | NullPointerException e)
     {

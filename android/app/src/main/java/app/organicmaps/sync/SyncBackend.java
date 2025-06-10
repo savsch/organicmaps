@@ -9,7 +9,7 @@ import androidx.annotation.StringRes;
 public interface SyncBackend
 {
   /**
-   * @return an integer that denotes the backend type. Persisted to the disk so must not be changed.
+   * @return an integer that denotes the backend type. Persisted to the disk, so must not be changed once the app is released.
    */
   int getId();
 
@@ -17,7 +17,7 @@ public interface SyncBackend
 
   Drawable getIcon(Context context);
 
-  void login(Context context, @Nullable LoginSuccessCallback callback);
+  void login(Context context);
 
   Class<? extends AuthState> getAuthStateClass();
 

@@ -7,8 +7,6 @@ import androidx.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import app.organicmaps.R;
-
 import java.util.Objects;
 
 // {"server": string, "loginName": string, "appPassword": string}

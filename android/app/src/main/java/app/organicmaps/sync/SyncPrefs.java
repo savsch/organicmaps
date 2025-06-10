@@ -39,6 +39,7 @@ public class SyncPrefs
 
   private final CopyOnWriteArrayList<SyncAccount> mAccounts;
   private final Set<LastSyncCallback> mLastSyncCallbacks = new HashSet<>();
+  private final Set<AccountsChangedCallback> mAccountsChangedCallbacks = new HashSet<>();
 
   private SyncPrefs(Context context)
   {
@@ -118,7 +119,6 @@ public class SyncPrefs
       catch (Exception ignored)
       {}
     }
-
   }
 
   public AddAccountResult addAccount(BackendType backendType, AuthState authState)
@@ -136,6 +136,15 @@ public class SyncPrefs
       Set<String> prefsSet = new HashSet<>(prefsAccounts.getStringSet(PREF_KEY_ACCOUNTS, Collections.emptySet()));
       prefsSet.add(newAccount.toJson().toString());
       prefsAccounts.edit().putStringSet(PREF_KEY_ACCOUNTS, prefsSet).apply();
+      for (AccountsChangedCallback callback: mAccountsChangedCallbacks)
+      {
+        try
+        {
+          callback.onAccountsChanged(Collections.unmodifiableList(mAccounts));
+        }
+        catch (Exception ignored)
+        {}
+      }
       return AddAccountResult.Success;
     }
     catch (JSONException e)
@@ -162,9 +171,24 @@ public class SyncPrefs
     mLastSyncCallbacks.remove(callback);
   }
 
+  public void registerAccountsChangedCallback(AccountsChangedCallback callback)
+  {
+    mAccountsChangedCallbacks.add(callback);
+  }
+
+  public void unregisterAccountsChangedCallback(AccountsChangedCallback callback)
+  {
+    mAccountsChangedCallbacks.remove(callback);
+  }
+
   public static interface LastSyncCallback
   {
     void onLastSyncChanged(long accountId, long timestamp);
+  }
+
+  public static interface AccountsChangedCallback
+  {
+    void onAccountsChanged(List<SyncAccount> newAccounts);
   }
 
   public static enum AddAccountResult

@@ -34,9 +34,9 @@ public enum BackendType implements SyncBackend
     }
 
     @Override
-    public void login(Context context, LoginSuccessCallback callback)
+    public void login(Context context)
     {
-      NextcloudLoginHelper.login(context, callback);
+      NextcloudLoginHelper.login(context);
     }
 
     @Override
@@ -66,9 +66,9 @@ public enum BackendType implements SyncBackend
     }
 
     @Override
-    public void login(Context context, LoginSuccessCallback callback)
+    public void login(Context context)
     {
-      throw new RuntimeException("TODO implement");
+      GoogleLoginHelper.login(context);
     }
 
     @Override
